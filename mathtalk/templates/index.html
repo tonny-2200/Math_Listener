@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Listener</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;0,900;1,700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .navbar {
+            background-color: #14467b;
+            
+        }
+        .navbar-brand {
+            font-size: 1.5rem;
+            color: white;
+            font-family: 'Roboto', sans-serif;
+            margin: auto;          
+        }
+        
+        .container {
+            margin-top: 50px;
+        }
+        
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary {
+            background-color: #28a745;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #218838;
+        }
+        .loader {
+            display: none;
+            border: 5px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 5px solid #007bff;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .output-box {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .equation-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #343a40;
+        }
+        /* Updated Header Styles */
+        h1, h5 {
+            text-align: center;
+            font-family: 'Georgia', serif;
+        }
+        .instructions {
+            text-align: left;
+            font-size: 1.1rem;
+            margin-top: 30px;
+        }
+        .instructions li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand"><h1>MATH LISTNER</h1></a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container text-center">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h1 class="card-title mb-4">Convert Speech to Math Equation</h1>
+                        <p class="card-text">Click the button below to start recording your mathematical equations.</p>
+                        <button id="record-btn" class="btn btn-primary btn-lg">
+                            <i class="fas fa-microphone"></i> Record Equation
+                        </button>
+                        <div class="mt-3">
+                            <div class="loader" id="loading-spinner"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Output Section -->
+                <div class="output-box" id="output-section">
+                    <h5 class="equation-text" id="equation-output">Your equation will appear here...</h5>
+                </div>
+
+                <!-- Instructions Section -->
+                <div class="instructions">
+                    <h5>How to Use Math Listener</h5>
+                    <ul>
+                        <li><b>Square Brackets []</b>: Say <i>"open squared brackets"</i> to open and <i>"closed squared brackets"</i> to close.</li>
+                        <li><b>Parenthesis ()</b>: Say <i>"open parenthesis"</i> to open and <i>"closed parenthesis"</i> to close.</li>
+                        <li><b>Permutation ⁿPₖ</b>: Say <i>"n permutation k"</i> to express.</li>
+                        <li><b>Combination ⁿCₖ</b>: Say <i>"n combination k"</i> to express.</li>
+                        <li><b>Exponents</b>: 
+                            <ul>
+                                <li><i>Use "raised to" or "to the power"</i> for exponents (e.g., "2 raised to 3").</li>
+                                <li><i>Say "number square" or "number cube"</i> for square (²) or cube (³).</li>
+                            </ul>
+                        </li>
+                        <li><b>Integration</b>: Say <i>"lower limit integral upper limit"</i> to print limits like ₄∫⁵.</li>
+                        <li><b>Modulo</b>: Say <i>"modulo your expression modulo"</i> to open and close the modulo expression.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('record-btn').addEventListener('click', function() {
+            // Display loading spinner during the recording process
+            document.getElementById('loading-spinner').style.display = 'block';
+            fetch('/record')  // Trigger the Flask backend to record the audio and process the equation
+                .then(response => response.json())  // Parse the JSON response
+                .then(data => {
+                    // Hide the loading spinner
+                    document.getElementById('loading-spinner').style.display = 'none';
+                    // Update the equation output dynamically
+                    const equation = data.equation || 'Error recognizing equation. Try again!';
+                    document.getElementById('equation-output').textContent = equation;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('equation-output').textContent = 'Error processing the audio!';
+                    document.getElementById('loading-spinner').style.display = 'none';
+                });
+        });
+    </script>
+
+</body>
+</html>
